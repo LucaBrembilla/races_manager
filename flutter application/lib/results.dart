@@ -3,12 +3,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:nuvole_mobili/main.dart';
 
 import './globals.dart';
-import './classes_route.dart';
+// ignore: unused_import
+import './Aggiornamento.dart';
 
-Future<List<Map<String, dynamic>>> fetchRaces() async {
-  final response = await http.get(Uri.parse('$apiUrl/list_races'));
+Future<List<Map<String, dynamic>>> richiestaRisultati(
+    String raceid, String category) async {
+  final response =
+      await http.get(Uri.parse('$apiUrl/results?id=$raceid&class=$category'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -21,41 +25,36 @@ Future<List<Map<String, dynamic>>> fetchRaces() async {
   }
 }
 
-void main() {
-  runApp(const MaterialApp(
-    title: 'Ori Live Results',
-    home: MyApp(),
-  ));
-}
-
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class LeaderboardRoute extends StatefulWidget {
+  final String raceid;
+  final String category;
+  const LeaderboardRoute(this.raceid, this.category, {Key? key})
+      : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _MyAppState createState() => _MyAppState();
+  _LeaderboardRouteState createState() => _LeaderboardRouteState();
 }
 
-class _MyAppState extends State<MyApp> {
-  late Future<List<Map<String, dynamic>>> futureRaces;
+class _LeaderboardRouteState extends State<LeaderboardRoute> {
+  late Future<List<Map<String, dynamic>>> futureResults;
 
   @override
   void initState() {
     super.initState();
-    futureRaces = fetchRaces();
+    futureResults = richiestaRisultati(widget.raceid, widget.category);
   }
 
   @override
   Widget build(BuildContext context) {
+    // ignore: no_leading_underscores_for_local_identifiers
     final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
         GlobalKey<RefreshIndicatorState>();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 0, 0, 0),
+      backgroundColor: Color.fromARGB(255, 175, 175, 175),
       appBar: AppBar(
-        title: const Text('Gare'),
+        title: const Text('Risultati'),
         elevation: 10,
-        centerTitle: true,
-        leading: Icon(Icons.account_circle_rounded),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -66,38 +65,27 @@ class _MyAppState extends State<MyApp> {
         },
         child: Center(
           child: FutureBuilder<List<Map<String, dynamic>>>(
-            future: futureRaces,
+            future: futureResults,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                var classes = snapshot.data!;
+                List<Map<String, dynamic>> result = snapshot.data!;
                 return ListView.builder(
-                  itemCount: classes.length,
-                  itemBuilder: ((context, index) => ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ClassesRoute(classes[index]["ID"]),
-                            ),
-                          );
-                        },
-                        child: Text(classes[index]["Nome"]),
-                        style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(250, 93, 176, 231),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
-                        /* style: ElevatedButton.styleFrom(          /per cambiare stile tasti
-                        primary: Color.fromARGB(255, 12, 1, 14),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 20),
-                        textStyle: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold))*/
-                      )),
-                );
+                    itemCount: result.length,
+                    itemBuilder: ((context, index) => TextField(
+                            decoration: InputDecoration(
+                          hintText: result[index]["position"] +
+                              result[index]["id"] +
+                              result[index]["personName"] +
+                              result[index]["personSurname"],
+                          hintStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 255, 255)),
+                          border: OutlineInputBorder(),
+                        ))));
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
+
               // By default, show a loading spinner.
               return const CircularProgressIndicator();
             },
