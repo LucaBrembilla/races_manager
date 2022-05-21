@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:nuvole_mobili/main.dart';
 
 import './globals.dart';
 // ignore: unused_import
