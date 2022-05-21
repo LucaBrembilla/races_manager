@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import './globals.dart';
 import './results.dart';
+import './starting_grid.dart';
 
 Future<List<String>> fetchClasses(String raceid) async {
   final response = await http.get(Uri.parse('$apiUrl/listclasses?id=$raceid'));
@@ -44,12 +45,18 @@ class _ClassesRouteState extends State<ClassesRoute> {
     final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
         GlobalKey<RefreshIndicatorState>();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 175, 175, 175),
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        title: const Text('Categorie'),
+        leading: BackButton(color: Colors.black),
+        title: const Text('Categorie',
+            style:
+                TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 30)),
         elevation: 10,
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),
       ),
       body: RefreshIndicator(
+        color: Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),
         onRefresh: () async {
           Navigator.pushReplacement(
               context,
@@ -69,16 +76,26 @@ class _ClassesRouteState extends State<ClassesRoute> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LeaderboardRoute(
+                                builder: (context) => StartingGridRoute(
                                     widget.raceid, classes[index]),
                               ),
                             );
                           },
-                          child: Text(classes[index]),
+                          child: Text(classes[index],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 63, 36, 0))),
                           style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(253, 10, 159, 228),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20))),
+                            primary: Color.fromARGB(248, 204, 122, 0),
+                            side: BorderSide(
+                                width: 2,
+                                color: Color.fromARGB(255, 63, 36, 0)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 8),
+                          ),
                         )));
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
@@ -90,7 +107,7 @@ class _ClassesRouteState extends State<ClassesRoute> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      /* floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Show refresh indicator programmatically on button tap.
           _refreshIndicatorKey.currentState?.show();
@@ -101,7 +118,7 @@ class _ClassesRouteState extends State<ClassesRoute> {
         },
         icon: const Icon(Icons.refresh),
         label: const Text('Refresh'),
-      ),
+      ),*/
     );
   }
 }

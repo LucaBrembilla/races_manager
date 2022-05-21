@@ -50,14 +50,19 @@ class _MyAppState extends State<MyApp> {
     final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
         GlobalKey<RefreshIndicatorState>();
     return Scaffold(
+      drawerScrimColor: Color.fromARGB(255, 0, 0, 0),
       backgroundColor: Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        title: const Text('Gare'),
+        title: const Text('Gare',
+            style:
+                TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 30)),
         elevation: 10,
         centerTitle: true,
-        leading: Icon(Icons.account_circle_rounded),
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),
       ),
       body: RefreshIndicator(
+        color: Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),
         onRefresh: () async {
           Navigator.pushReplacement(
               context,
@@ -82,11 +87,21 @@ class _MyAppState extends State<MyApp> {
                             ),
                           );
                         },
-                        child: Text(classes[index]["Nome"]),
+                        child: Text(classes[index]["Nome"],
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 63, 36, 0))),
                         style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(250, 93, 176, 231),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20))),
+                          primary: Color.fromARGB(248, 204, 122, 0),
+                          side: BorderSide(
+                              width: 2, color: Color.fromARGB(255, 63, 36, 0)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 8),
+                        ),
+
                         /* style: ElevatedButton.styleFrom(          /per cambiare stile tasti
                         primary: Color.fromARGB(255, 12, 1, 14),
                         padding: const EdgeInsets.symmetric(
@@ -104,7 +119,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      /*floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Show refresh indicator programmatically on button tap.
           _refreshIndicatorKey.currentState?.show();
@@ -113,9 +128,10 @@ class _MyAppState extends State<MyApp> {
               MaterialPageRoute(
                   builder: (BuildContext context) => super.widget));
         },
-        icon: const Icon(Icons.refresh),
-        label: const Text('Refresh'),
-      ),
+        icon: const Icon(Icons.refresh, color: ,),
+        label: Text(''),
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),
+      ),*/
     );
   }
 }

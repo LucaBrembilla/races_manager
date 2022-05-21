@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './globals.dart';
-import './starting_grid.dart';
+import './results.dart';
+// ignore: unused_import
 
-Future<List<Map<String, dynamic>>> richiestaRisultati(
+Future<List<Map<String, dynamic>>> richiestaDati(
     String raceid, String category) async {
   final response =
       await http.get(Uri.parse('$apiUrl/results?id=$raceid&class=$category'));
@@ -23,31 +25,24 @@ Future<List<Map<String, dynamic>>> richiestaRisultati(
   }
 }
 
-Color getColor(String date) {
-  if (DateTime.now().difference(DateTime.parse(date)).inMinutes > 10)
-    return Color.fromARGB(255, 255, 255, 255);
-  else
-    return Color.fromARGB(255, 53, 227, 5);
-}
-
-class LeaderboardRoute extends StatefulWidget {
+class StartingGridRoute extends StatefulWidget {
   final String raceid;
   final String category;
-  const LeaderboardRoute(this.raceid, this.category, {Key? key})
+  const StartingGridRoute(this.raceid, this.category, {Key? key})
       : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _LeaderboardRouteState createState() => _LeaderboardRouteState();
+  _StartingGridRoute createState() => _StartingGridRoute();
 }
 
-class _LeaderboardRouteState extends State<LeaderboardRoute> {
+class _StartingGridRoute extends State<StartingGridRoute> {
   late Future<List<Map<String, dynamic>>> futureResults;
 
   @override
   void initState() {
     super.initState();
-    futureResults = richiestaRisultati(widget.raceid, widget.category);
+    futureResults = richiestaDati(widget.raceid, widget.category);
   }
 
   @override
@@ -58,7 +53,7 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 175, 175, 175),
       appBar: AppBar(
-        title: const Text('Risultati'),
+        title: const Text('Griglia Di Partenza'),
         elevation: 10,
       ),
       body: GestureDetector(
@@ -67,7 +62,7 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  StartingGridRoute(widget.raceid, widget.category),
+                  LeaderboardRoute(widget.raceid, widget.category),
             ),
           );
         },
@@ -84,20 +79,21 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<Map<String, dynamic>> result = snapshot.data!;
+                  List<Map<String, dynamic>> listCopy = List.of(result);
+                  listCopy.sort((a, b) {
+                    return (a['startTime']).compareTo(b['startTime']);
+                  });
                   return ListView.builder(
                       itemCount: result.length,
-                      itemBuilder: ((context, index) => Text(
-                          result[index]["position"] +
-                              result[index]["id"] +
-                              result[index]["personName"] +
-                              result[index]["personSurname"] +
-                              result[index]["startTime"],
-                          style: TextStyle(
-                              color: getColor(result[index]["finishTime"])))));
+                      itemBuilder: ((context, index) => Text(listCopy[index]
+                              ["position"] +
+                          listCopy[index]["id"] +
+                          listCopy[index]["personName"] +
+                          listCopy[index]["personSurname"] +
+                          listCopy[index]["startTime"])));
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
                 }
-
                 // By default, show a loading spinner.
                 return const CircularProgressIndicator();
               },
@@ -105,7 +101,7 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
           ),
         ),
       ),
-      /* floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Show refresh indicator programmatically on button tap.
           _refreshIndicatorKey.currentState?.show();
@@ -116,7 +112,7 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
         },
         icon: const Icon(Icons.refresh),
         label: const Text('Refresh'),
-      ),*/
+      ),
     );
   }
 }
