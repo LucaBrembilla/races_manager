@@ -1,7 +1,8 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -51,11 +52,16 @@ class _StartingGridRoute extends State<StartingGridRoute> {
     final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
         GlobalKey<RefreshIndicatorState>();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 175, 175, 175),
+      drawerScrimColor: Color.fromARGB(255, 0, 0, 0),
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        title: const Text('Griglia Di Partenza'),
+        leading: BackButton(color: Colors.black),
+        title: const Text('Griglia Di Partenza',
+        style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 30)),
         elevation: 10,
-      ),
+        centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),
+     ),
       body: GestureDetector(
         onPanUpdate: (details) {
           Navigator.pushReplacement(
@@ -66,13 +72,15 @@ class _StartingGridRoute extends State<StartingGridRoute> {
             ),
           );
         },
-        child: RefreshIndicator(
+        child:RefreshIndicator(
+          color: Color.fromARGB(255, 0, 0, 0),
+          backgroundColor: Color.fromARGB(255, 202, 138, 0),
           onRefresh: () async {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => super.widget));
-          },
+        },
           child: Center(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: futureResults,
@@ -85,23 +93,44 @@ class _StartingGridRoute extends State<StartingGridRoute> {
                   });
                   return ListView.builder(
                       itemCount: result.length,
-                      itemBuilder: ((context, index) => Text(listCopy[index]
-                              ["position"] +
-                          listCopy[index]["id"] +
-                          listCopy[index]["personName"] +
-                          listCopy[index]["personSurname"] +
-                          listCopy[index]["startTime"])));
+                       itemBuilder: ((context, index) => RichText(  text: TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: " ID: " + listCopy[index]["id"]+ "\n",
+                                        style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                                      ),
+                                      TextSpan(
+                                        text: " ATLETA: " +  listCopy[index]["personName"] + " "+  listCopy[index]["personSurname"]  + "\n",
+                                        style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                                      ),
+                                      TextSpan(
+                                        text: " PARTENZA: " +  DateTime.parse( listCopy[index]["startTime"] ).toLocal().toString().substring(0, DateTime.parse( result[index]["startTime"] ).toLocal().toString().length - 4) +"\n",
+                                        style: TextStyle(color: Colors.white.withOpacity(1.0)),
+                                      ),
+                                    ],
+                                  ),
+                          )));
+               /*       itemBuilder: ((context, index) => Text(  "ID: " + 
+                          listCopy[index]["id"]+ " - ATLETA: " + 
+                           listCopy[index]["personName"] + " " + 
+                           listCopy[index]["personSurname"] + " - PARTENZA: " + 
+                           listCopy[index]["startTime"], 
+                           style: TextStyle(
+                              color: getColor(result[index]["finishTime"])))));*/
+                          
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
                 }
                 // By default, show a loading spinner.
-                return const CircularProgressIndicator();
+                return const CircularProgressIndicator(
+                  color: Color.fromARGB(248, 204, 122, 0),
+              );
               },
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+     /* floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Show refresh indicator programmatically on button tap.
           _refreshIndicatorKey.currentState?.show();
@@ -112,7 +141,7 @@ class _StartingGridRoute extends State<StartingGridRoute> {
         },
         icon: const Icon(Icons.refresh),
         label: const Text('Refresh'),
-      ),
+      ),*/
     );
   }
 }

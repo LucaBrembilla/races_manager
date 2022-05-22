@@ -45,6 +45,7 @@ class _ClassesRouteState extends State<ClassesRoute> {
     final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
         GlobalKey<RefreshIndicatorState>();
     return Scaffold(
+      drawerScrimColor: Color.fromARGB(255, 0, 0, 0),
       backgroundColor: Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
         leading: BackButton(color: Colors.black),
@@ -102,7 +103,9 @@ class _ClassesRouteState extends State<ClassesRoute> {
               }
 
               // By default, show a loading spinner.
-              return const CircularProgressIndicator();
+              return const CircularProgressIndicator(
+                color: Color.fromARGB(248, 204, 122, 0),
+              );
             },
           ),
         ),

@@ -24,10 +24,17 @@ Future<List<Map<String, dynamic>>> richiestaRisultati(
 }
 
 Color getColor(String date) {
-  if (DateTime.now().difference(DateTime.parse(date)).inMinutes > 10)
+  if (DateTime.now().difference(DateTime.parse(date)).inMinutes > 4)
     return Color.fromARGB(255, 255, 255, 255);
   else
     return Color.fromARGB(255, 53, 227, 5);
+}
+
+Color getColorStarted(String time){
+  if(time != "0")
+    return Color.fromARGB(255, 255, 255, 255); 
+  else
+    return Color.fromARGB(255, 255, 1, 1);
 }
 
 class LeaderboardRoute extends StatefulWidget {
@@ -56,11 +63,15 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
     final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
         GlobalKey<RefreshIndicatorState>();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 175, 175, 175),
+      drawerScrimColor: Color.fromARGB(255, 0, 0, 0),
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        title: const Text('Risultati'),
+        leading: BackButton(color: Colors.black),
+        title: const Text('Risultati',style:
+                TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 30)),
         elevation: 10,
-      ),
+        centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 202, 138, 0),),
       body: GestureDetector(
         onPanUpdate: (details) {
           Navigator.pushReplacement(
@@ -72,12 +83,14 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
           );
         },
         child: RefreshIndicator(
+          color: Color.fromARGB(255, 0, 0, 0),
+          backgroundColor: Color.fromARGB(255, 202, 138, 0),
           onRefresh: () async {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => super.widget));
-          },
+        },
           child: Center(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: futureResults,
@@ -86,20 +99,40 @@ class _LeaderboardRouteState extends State<LeaderboardRoute> {
                   List<Map<String, dynamic>> result = snapshot.data!;
                   return ListView.builder(
                       itemCount: result.length,
-                      itemBuilder: ((context, index) => Text(
-                          result[index]["position"] +
-                              result[index]["id"] +
-                              result[index]["personName"] +
-                              result[index]["personSurname"] +
-                              result[index]["startTime"],
-                          style: TextStyle(
-                              color: getColor(result[index]["finishTime"])))));
+                      // ignore: prefer_interpolation_to_compose_strings
+                                            itemBuilder: ((context, index) => RichText(  text: TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: " POSIZIONE: " + result[index]["position"]+ "\n",
+                                        style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                                      ),
+                                      TextSpan(
+                                        text: " ID: " + result[index]["id"]+ "\n",
+                                        style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                                      ),
+                                      TextSpan(
+                                        text: " ATLETA: " +  result[index]["personName"] + " "+   result[index]["personSurname"]  + "\n",
+                                        style: TextStyle(color: Colors.white.withOpacity(0.8)),
+                                      ),
+                                      TextSpan(
+                                        text: " ARRIVO: " +   DateTime.parse( result[index]["finishTime"] ).toLocal().toString().substring(0, DateTime.parse( result[index]["finishTime"] ).toLocal().toString().length - 4) +"\n",
+                                        style: TextStyle(color: getColor(result[index]["finishTime"])),
+                                      ),
+                                      TextSpan(
+                                        text: " TEMPO: " +  result[index]["raceTime"]  + " s " + "\n",
+                                        style: TextStyle(color: getColorStarted(result[index]["raceTime"])),
+                                      ),
+                                    ],
+                                  ),
+                          )));
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
                 }
 
                 // By default, show a loading spinner.
-                return const CircularProgressIndicator();
+                return const CircularProgressIndicator(
+                    color: Color.fromARGB(248, 204, 122, 0),
+              );
               },
             ),
           ),
