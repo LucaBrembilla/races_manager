@@ -6,9 +6,6 @@ const S3 = new AWS.S3();
 const bucketName = 'tcmbucket'; 
 const docClient = new AWS.DynamoDB.DocumentClient(); 
 const tableName = 'Gare';
- 
-// TODO: FARE UNA FUNZIONE CHE TI PRENDA IL NOME DALLA TABELLA E POI LO VADA A CERCARE NEL BUCKET
-// let n = 2; // TODO: N sarebbe l'id che c'è nella tabella... sarebbe meglio prenderlo direttamente da lì
 
 //HANDLER EVENTO 
 exports.handler = async function(event) { 
