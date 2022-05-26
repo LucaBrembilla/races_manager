@@ -192,14 +192,21 @@ async function getResults(event) {
     const peopleSurname = xpath.select( "//Person/Name/Family/text()" , peopleDoc);
     const peopleName = xpath.select( "//Person/Name/Given/text()" , peopleDoc);
     const peoplePosition = xpath.select( "//Result/Position/text()" , peopleDoc);
+    const startTime = xpath.select( "//Result/StartTime/text()" , peopleDoc);
+    const finishTime = xpath.select( "//Result/FinishTime/text()" , peopleDoc);
+    const raceTime = xpath.select( "//Result/Time/text()" , peopleDoc);
     while(i < numberOfPeople){
       string = string + '{ "id":"' + personId[i] + '",';
       string = string + '"personName":"' + peopleName[i] + '",';
       string = string + '"personSurname":"' + peopleSurname[i] + '",';
       if(peoplePosition[i] === undefined)
-        string = string + '"position": "Disqualified"},';
+        string = string + '"position": "Disqualified",';
       else
-        string = string + '"position":"' + peoplePosition[i] + '"},';
+        string = string + '"position":"' + peoplePosition[i] + '",';
+        
+      string = string + '"raceTime":"' + raceTime[i] + '",';
+      string = string + '"startTime":"' + startTime[i] + '",';
+      string = string + '"finishTime":"' + finishTime[i] + '"},';
       i++;
     }
     
@@ -207,7 +214,6 @@ async function getResults(event) {
     string = string + ']';
 
     return JSON.parse(string);
-    
     //return node.toString();
     
     //return convert.xml2json( node.toString(), {compact: true, spaces: 4} );
